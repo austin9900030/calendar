@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+QTime datingtime;
+QString day;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -14,6 +16,24 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(clock,SIGNAL(timeout()),this,SLOT(updatetime()));
         clock->start();
 
+
+        datingtime=time.addSecs(+1800);
+        QString notistime = datingtime.toString("yyyy-MM-dd-hh:mm:ss");
+    if(notistime==day)
+    {
+        ui->textBrowser->append("it's time to have a date ");
+        QFile file("savedata.txt");
+        if(file.open(QIODevice::ReadOnly))
+        {
+            QString line;
+            QTextStream in(&file);
+            while (!in.atEnd()) {
+                line = in.readLine();
+                ui->textBrowser->append(line);
+            }
+        }
+    }
+
 }
 
 MainWindow::~MainWindow()
@@ -21,7 +41,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QString day;
+
 
 void MainWindow::on_output_clicked()
 {
@@ -46,7 +66,7 @@ void MainWindow::on_output_clicked()
 
 void MainWindow::on_dateTime_dateTimeChanged(const QDateTime &dateTime)
 {
-    day=dateTime.toString();
+    day=dateTime.toString("yyyy-MM-dd-hh:mm:ss");
 }
 
 void MainWindow::updatetime()
